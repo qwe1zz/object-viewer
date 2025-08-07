@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>파일 업로드</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-storage-compat.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; }
+    h1 { margin-bottom: 20px; }
+    input[type="file"] { margin-bottom: 10px; }
+    button { padding: 8px 16px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Firebase 파일 업로드</h1>
+  <input type="file" id="fileInput">
+  <button onclick="uploadFile()">업로드</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcTkxmGTFeChSCHVQbRU41uxBpT_215qw",
+      authDomain: "object-viewer-uploader.firebaseapp.com",
+      projectId: "object-viewer-uploader",
+      storageBucket: "object-viewer-uploader.appspot.com",
+      messagingSenderId: "371860249033",
+      appId: "1:371860249033:web:825a7e133a4d460b573018",
+      measurementId: "G-WZF3T2JWD5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
+
+    function uploadFile() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) {
+        alert("파일을 선택해주세요.");
+        return;
+      }
+
+      const storageRef = storage.ref('uploads/' + file.name);
+      const uploadTask = storageRef.put(file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('업로드 진행률:', progress + '%');
+        },
+        (error) => {
+          console.error('업로드 실패:', error);
+          alert('업로드 실패: ' + error.message);
+        },
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            alert('업로드 완료! 다운로드 링크: ' + downloadURL);
+          });
+        }
+      );
+    }
+  </script>
+</body>
+</html>
