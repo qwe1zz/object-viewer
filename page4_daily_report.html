@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<title>4. 공정현황</title>
+<link href="css/style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet"/>
+<style>
+        /* ================================================================== */
+        /* [최종] 4페이지 전체 UI/레이아웃 수정 */
+        /* ================================================================== */
+
+        #page4.page-content {
+            height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 15px;
+        }
+        #p4-top-section {
+            display: flex; flex-direction: row; gap: 15px; flex-shrink: 0;
+        }
+        #p4-bottom-section {
+            flex: 1; display: flex; flex-direction: column; min-height: 0;
+        }
+        .panel-container {
+            background: #f7f9fc; border: 1px solid #d8deeb; border-radius: 8px;
+            padding: 20px; display: flex; flex-direction: column;
+        }
+        .panel-title {
+            font-size: 18px; font-weight: bold; margin: 0 0 15px 0;
+            padding-bottom: 10px; border-bottom: 1px solid #e0e0e0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        #daily-work-panel { flex: 8; overflow-y: auto; }
+        #calendar-panel { flex: 4; }
+        #daily-status-table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+        
+        #daily-status-table th, #daily-status-table td { 
+            border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 14px; vertical-align: middle;
+        }
+        #daily-status-table th { background-color: #eaf2fa; }
+        #daily-status-table input, #daily-status-table select { 
+            width: 95%; box-sizing: border-box; font-size: 14px; text-align: center; padding: 2px;
+        }
+        #daily-status-table .apply-btn { padding: 4px 10px; cursor: pointer; font-size: 13px; }
+        #daily-status-table th:last-child, #daily-status-table td:last-child { width: 70px; }
+        /* [추가] No. 열 너비 고정 */
+        #daily-status-table th:first-child, #daily-status-table td:first-child { width: 40px; }
+
+
+        /* --- 캘린더 스타일 수정 --- */
+        #calendar-panel { padding-bottom: 10px; }
+        #calendar-container {
+            flex-grow: 1; display: flex; flex-direction: column;
+        }
+        #page4 #calendar-container .flatpickr-input {
+            display: none !important;
+        }
+        #page4 #calendar-container .flatpickr-calendar {
+            width: 100% !important; height: 100% !important; max-width: none !important;
+            box-shadow: none !important; border: none !important; background: transparent !important;
+            display: flex; flex-direction: column;
+        }
+        #page4 #calendar-container .flatpickr-rContainer,
+        #page4 #calendar-container .flatpickr-days {
+            display: flex; flex-direction: column; flex-grow: 1; height: 100%;
+        }
+        #page4 #calendar-container .dayContainer {
+            display: grid; grid-template-rows: repeat(6, 1fr);
+            flex-grow: 1; border: 1px solid #e0e0e0; border-radius: 4px; background: #fff;
+        }
+        #page4 #calendar-container .flatpickr-day {
+            display: flex; align-items: center; justify-content: center;
+            height: 100%; line-height: 1;
+        }
+        /* --- 캘린더 스타일 수정 끝 --- */
+
+        #gantt-panel-p4 { flex-grow: 1; display: flex; flex-direction: column; min-height: 0; }
+        #p4-gantt-container { overflow: auto; flex-grow: 1; }
+        #p4-gantt-container table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+
+        #p4-gantt-container th, #p4-gantt-container td {
+            border: 1px solid #ddd; text-align: center; font-size: 11px;
+            white-space: nowrap; vertical-align: middle; padding: 0; height: 20px;
+        }
+
+        #p4-gantt-container thead th { position: sticky; background: #eaf2fa; z-index: 2; }
+        #p4-gantt-container .gantt-header-row-0 th { top: 0; }
+        #p4-gantt-container .gantt-header-row-1 th { top: 21px; }
+        #p4-gantt-container .gantt-header-row-2 th { top: 42px; }
+        #p4-gantt-container .gantt-header-row-3 th { top: 63px; }
+
+        #p4-gantt-container .col-name, #p4-gantt-container .col-job, #p4-gantt-container .col-division {
+            position: sticky; z-index: 1; background: #f7f9fc;
+        }
+        #p4-gantt-container .col-name { left: 0; width: 250px; text-align: left !important; padding-left: 10px !important; }
+        #p4-gantt-container .col-job { left: 250px; width: 200px; text-align: left !important; padding-left: 8px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        #p4-gantt-container .col-division { left: 450px; width: 60px; font-weight: bold; }
+
+        #p4-gantt-container thead th.col-name, #p4-gantt-container thead th.col-job, #p4-gantt-container thead th.col-division { z-index: 3 !important; }
+
+        #p4-gantt-container .gantt-hour-cell { width: 15px !important; min-width: 15px !important; border-left: 1px dotted #e0e0e0; }
+        #p4-gantt-container .gantt-day-divider { border-right: 1px solid #ccc !important; }
+        
+        #p4-gantt-container tr.gantt-row:hover > td, #p4-gantt-container tr.sub-row:hover > td { background-color: #f0f4f8; }
+        #p4-gantt-container tr:hover > td.col-name, #p4-gantt-container tr:hover > td.col-job, #p4-gantt-container tr:hover > td.col-division { background-color: #e6ecf2; }
+        
+        #p4-gantt-container tr.selected-row > td { background-color: #fffbe0 !important; }
+
+        .plan-label { color: #28a745; }
+        .actual-label { color: #007bff; }
+        .active-plan { background-color: #a7d7b5; }
+        .active-actual { background-color: #cfe2ff; }
+        .sub-row td { border-top-width: 0; }
+</style>
+</head>
+<body>
+<nav id="main-nav">
+<a href="page1_object_task.html">1. 객체/작업</a>
+<a href="page2_job_weather.html">2. JOB/기상</a>
+<a href="page3_viewer_gantt.html">3. BIM/예정 공정표</a>
+<a class="active" href="page4_daily_report.html">4. 공정현황</a>
+</nav>
+<div id="container">
+<div class="page-wrapper">
+<div class="page-content" id="page4">
+<!-- 상단 -->
+<div id="p4-top-section">
+<div class="panel-container" id="daily-work-panel">
+<div class="panel-title">
+<span>📝 일일작업현황</span>
+<button id="btn-apply-all" style="font-size: 14px; padding: 5px 12px;">전체 적용</button>
+</div>
+<table id="daily-status-table">
+<thead>
+<!-- ================== [수정] 테이블 헤더에 'No.' 열 추가 ================== -->
+<tr>
+  <th rowspan="2">No.</th>
+  <th rowspan="2">작업시간</th>
+  <th colspan="2">Site-A</th>
+  <th colspan="2">Site-B</th>
+  <th rowspan="2">작업인원</th>
+  <th rowspan="2">자재</th>
+  <th rowspan="2">장비</th>
+  <th colspan="2">교육</th>
+  <th rowspan="2">품질검토</th>
+  <th rowspan="2">감독자</th>
+  <th rowspan="2">적용</th>
+</tr>
+<tr>
+  <th>날씨</th>
+  <th>기온(°C)</th>
+  <th>날씨</th>
+  <th>기온(°C)</th>
+  <th>안전</th>
+  <th>품질</th>
+</tr>
+<!-- ======================================================================= -->
+</thead>
+<tbody>
+<!-- ================== [수정] 테이블 바디 생성 스크립트 ================== -->
+<script>
+    // No. 열을 위한 카운터 변수
+    let rowNum = 0;
+    for (let i = 9; i <= 17; i++) {
+        if (i === 12) continue; // 점심시간 제외
+        rowNum++; // 루프가 돌 때마다 번호 증가
+
+        document.write(`
+            <tr data-time-key="${String(i).padStart(2, '0')}">
+                <!-- No. 열 추가 -->
+                <td>${rowNum}</td>
+                <td>${i}~${i+1}</td>
+                <td><select class="input-weather-a">
+                    <option>맑음</option><option>흐림</option><option>비</option><option>눈</option></select></td>
+                <td><input type="number" class="input-temp-a" value="25" /></td>
+                <td><select class="input-weather-b">
+                    <option>맑음</option><option>흐림</option><option>비</option><option>눈</option></select></td>
+                <td><input type="number" class="input-temp-b" value="25" /></td>
+                <td><input type="number" class="input-workers" value="0" min="0"></td>
+                <td><select class="input-materials"><option value="O">O</option><option value="X">X</option></select></td>
+                <td><select class="input-equipment"><option value="O">O</option><option value="X">X</option></select></td>
+                <td><select class="input-safety"><option value="O">O</option><option value="X">X</option></select></td>
+                <td><select class="input-quality"><option value="O">O</option><option value="X">X</option></select></td>
+                <td><select class="input-quality-review"><option>양호</option><option>불량</option></select></td>
+                <td><input type="text" class="input-supervisor"></td>
+                <td><button class="apply-btn">적용</button></td>
+            </tr>
+        `);
+    }
+</script>
+<!-- ======================================================================= -->
+</tbody>
+</table>
+</div>
+<div class="panel-container" id="calendar-panel">
+<div class="panel-title">📅 캘린더</div>
+<div id="calendar-container"></div>
+</div>
+</div>
+<!-- 하단 -->
+<div id="p4-bottom-section">
+<div class="panel-container" id="gantt-panel-p4">
+<div class="panel-title">📊 공정현황 (예정/실적)</div>
+<div id="p4-gantt-container"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 스크립트 로드 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+<script src="js/common.js"></script>
+<script src="js/jspage4.js"></script>
+</body>
+</html>

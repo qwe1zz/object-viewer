@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<title>2. JOB 및 기상 정보</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<link href="css/style.css" rel="stylesheet"/>
+<style>
+        #jobTableWrap .job-row.selected > td {
+            background-color: #fffbe0 !important;
+        }
+        #weatherTableWrap th.col-site.selected {
+            background-color: #007bff !important;
+            color: white !important;
+        }
+        #weatherTableWrap tr.unused-worker td {
+            background-color: #ffcccc !important;
+        }
+        #weatherTableWrap tr.potential-bottleneck td {
+            background-color: #fffbe0 !important;
+        }
+    </style>
+</head>
+<body>
+<nav id="main-nav">
+<a href="page1_object_task.html">1. 객체/작업</a>
+<a class="active" href="page2_job_weather.html">2. JOB/기상</a>
+<a href="page3_viewer_gantt.html">3. BIM/예정공정표</a>
+<a href="page4_daily_report.html">4. 일일실적</a>
+</nav>
+<div id="container">
+<div class="page-wrapper">
+<div class="page-content" id="page2">
+<div class="column-panel">
+<div id="jobPanel">
+<div class="panel-title">📋 JOB(관리)</div>
+<div class="toolbar">
+<button id="btnCreateJob">JOB 생성</button>
+<button id="btnAddLocation">📍위치 추가</button>
+<button id="btnGenerateScheduleOptimized">👨‍🔧 예정 공정표 생성</button>
+<button id="btnJobExportJson">💾 JOB JSON 저장</button>
+<button id="btnJobExportExcel">📥Excel 저장</button>
+</div>
+<div class="attr-table-scroll" id="jobTableWrap"></div>
+</div>
+</div>
+<div class="column-panel">
+<div id="weatherPanel">
+<div class="panel-title">📅 작업일 및 기상 현황</div>
+<div class="toolbar">
+<input accept=".xlsx,.xls" id="weatherExcelFile" type="file"/>
+<!-- [신규] 기상 현황 JSON 저장 버튼 추가 -->
+<button id="btnWeatherExportJson">💾 기상현황 JSON 저장</button>
+<button id="btnWeatherExportExcel">📥 Excel 저장</button>
+</div>
+<div class="attr-table-scroll" id="weatherTableWrap"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 작업인원 최적화 모달 -->
+<div class="modal-overlay" id="workforce-optimization-modal">
+<div class="modal-content" style="width: 450px;">
+<div class="modal-title">예정 공정표 생성</div>
+<div class="modal-body">
+<p>최대 인원 설정 후 계산</p>
+<label for="max-daily-workers" style="display: block; margin-top: 10px; font-weight: bold;">1일 최대 투입 가능 인원:</label>
+<input id="max-daily-workers" min="1" style="width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box;" type="number" value="4"/>
+<div class="modal-footer">
+<button class="btn-confirm" id="btn-confirm-optimization">최대 인원 설정 후 계산 시작</button>
+</div>
+</div>
+<div class="modal-footer" style="margin-top: 25px; justify-content: flex-end;">
+<button class="btn-cancel" id="btn-cancel-optimization">취소</button>
+</div>
+</div>
+</div>
+<!-- 필수 라이브러리 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- 공통 스크립트 및 페이지 스크립트 -->
+<script src="js/common.js"></script>
+<script src="js/jspage2.js"></script>
+</body>
+</html>

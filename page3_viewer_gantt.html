@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <title>3. BIM 및 예정 공정표</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.151.3/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.151.3/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav id="main-nav">
+        <a href="page1_object_task.html">1. 객체/작업</a>
+        <a href="page2_job_weather.html">2. JOB/기상</a>
+        <a href="page3_viewer_gantt.html" class="active">3. BIM/예정 공정표</a>
+        <a href="page4_daily_report.html">4. 일일실적</a>
+    </nav>
+    <div id="container">
+        <div class="page-wrapper">
+            <div id="page3" class="page-content">
+                <div id="page3-top-panel">
+                    <div id="viewer-panel">
+                        <div class="panel-title">🏗 3D BIM 형상 뷰어</div>
+                        <div class="toolbar">
+                            <label for="obj-file-input">OBJ/MTL 파일 가져오기:</label>
+                            <input accept=".obj,.mtl" id="obj-file-input" multiple type="file"/>
+                            <button id="btnLinkObjModels">🔗 OBJ 형상 자동연결</button>
+                            <button id="btnFocusObject">🔎 선택 객체로 이동</button>
+                            <button id="btnViewAll">🌍 전체 보기</button>
+                        </div>
+                        <div id="viewer-container">
+                            <div id="drag-drop-guide" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 16px; text-align: center; pointer-events: none;">
+                                <p>여기에 OBJ/MTL 파일을 드래그 앤 드롭하세요.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="properties-panel">
+                        <div class="panel-title">📋 BIM 속성 정보</div>
+                        <div id="prop-table-wrap"></div>
+                    </div>
+                </div>
+                <div id="gantt-container">
+                    <div class="panel-title">📅 예정 공정표</div>
+                    <div id="gantt-table-wrap"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="js/common.js"></script>
+    <script type="module" src="js/jspage3.js"></script>
+    <script>
+    document.getElementById('obj-file-input').addEventListener('change', (event) => {
+        const files = event.target.files;
+        if (files.length > 0 && typeof handleFiles === 'function') {
+            $('#drag-drop-guide').hide();
+            handleFiles(files);
+        }
+    });
+    </script>
+</body>
+</html>
