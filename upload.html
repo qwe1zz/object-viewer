@@ -2,25 +2,47 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>파일 업로드</title>
+  <title>Firebase 다중 업로드</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-storage-compat.js"></script>
+  <!-- ✅ Firebase SDK (Compat 버전) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <!-- ✅ favicon.ico 에러 방지 -->
+  <link rel="icon" href="data:,">
 
   <style>
-    body { font-family: Arial, sans-serif; padding: 40px; }
-    h1 { margin-bottom: 20px; }
-    input[type="file"] { margin-bottom: 10px; }
-    button { padding: 8px 16px; font-size: 14px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+    h1 {
+      color: #333;
+    }
+    input[type="file"] {
+      margin-top: 15px;
+    }
+    button {
+      padding: 8px 20px;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    ul {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>Firebase 파일 업로드</h1>
-  <input type="file" id="fileInput">
-  <button onclick="uploadFile()">업로드</button>
+
+  <h1>📤 Firebase 다중 파일 업로드</h1>
+
+  <input type="file" id="fileInput" multiple>
+  <button onclick="uploadFiles()">업로드</button>
+
+  <ul id="uploadList"></ul>
 
   <script>
+    // ✅ Firebase 구성
     const firebaseConfig = {
       apiKey: "AIzaSyDcTkxmGTFeChSCHVQbRU41uxBpT_215qw",
       authDomain: "object-viewer-uploader.firebaseapp.com",
@@ -31,36 +53,47 @@
       measurementId: "G-WZF3T2JWD5"
     };
 
+    // ✅ Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const storage = firebase.storage();
 
-    function uploadFile() {
-      const file = document.getElementById('fileInput').files[0];
-      if (!file) {
-        alert("파일을 선택해주세요.");
+    // ✅ 다중 파일 업로드 함수
+    function uploadFiles() {
+      const files = document.getElementById('fileInput').files;
+      const uploadList = document.getElementById('uploadList');
+      uploadList.innerHTML = '';
+
+      if (files.length === 0) {
+        alert('파일을 선택하세요!');
         return;
       }
 
-      const storageRef = storage.ref('uploads/' + file.name);
-      const uploadTask = storageRef.put(file);
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const storageRef = storage.ref().child('uploads/' + file.name);
 
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('업로드 진행률:', progress + '%');
-        },
-        (error) => {
-          console.error('업로드 실패:', error);
-          alert('업로드 실패: ' + error.message);
-        },
-        () => {
-          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            alert('업로드 완료! 다운로드 링크: ' + downloadURL);
+        const li = document.createElement('li');
+        li.textContent = file.name + ' 업로드 중...';
+        uploadList.appendChild(li);
+
+        storageRef.put(file)
+          .then(snapshot => {
+            li.textContent = file.name + ' ✅ 업로드 완료';
+            return storageRef.getDownloadURL();
+          })
+          .then(url => {
+            const a = document.createElement('a');
+            a.href = url;
+            a.textContent = ' [다운로드 링크]';
+            a.target = '_blank';
+            li.appendChild(a);
+          })
+          .catch(error => {
+            li.textContent = file.name + ' ❌ 업로드 실패: ' + error.message;
           });
-        }
-      );
+      }
     }
   </script>
+
 </body>
 </html>
