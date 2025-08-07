@@ -16,16 +16,12 @@
       font-family: Arial, sans-serif;
       padding: 40px;
     }
-    h1 {
-      color: #333;
-    }
     input[type="file"] {
-      margin-top: 15px;
+      margin-top: 10px;
     }
     button {
-      padding: 8px 20px;
-      font-size: 14px;
       margin-left: 10px;
+      padding: 6px 14px;
     }
     ul {
       margin-top: 20px;
@@ -34,15 +30,14 @@
 </head>
 <body>
 
-  <h1>📤 Firebase 다중 파일 업로드</h1>
-
+  <h2>📤 Firebase 다중 업로드</h2>
   <input type="file" id="fileInput" multiple>
   <button onclick="uploadFiles()">업로드</button>
 
   <ul id="uploadList"></ul>
 
   <script>
-    // ✅ Firebase 구성
+    // ✅ Firebase 설정
     const firebaseConfig = {
       apiKey: "AIzaSyDcTkxmGTFeChSCHVQbRU41uxBpT_215qw",
       authDomain: "object-viewer-uploader.firebaseapp.com",
@@ -57,7 +52,6 @@
     firebase.initializeApp(firebaseConfig);
     const storage = firebase.storage();
 
-    // ✅ 다중 파일 업로드 함수
     function uploadFiles() {
       const files = document.getElementById('fileInput').files;
       const uploadList = document.getElementById('uploadList');
@@ -79,7 +73,7 @@
         storageRef.put(file)
           .then(snapshot => {
             li.textContent = file.name + ' ✅ 업로드 완료';
-            return storageRef.getDownloadURL();
+            return snapshot.ref.getDownloadURL();
           })
           .then(url => {
             const a = document.createElement('a');
@@ -89,7 +83,7 @@
             li.appendChild(a);
           })
           .catch(error => {
-            li.textContent = file.name + ' ❌ 업로드 실패: ' + error.message;
+            li.textContent = file.name + ' ❌ 오류: ' + error.message;
           });
       }
     }
